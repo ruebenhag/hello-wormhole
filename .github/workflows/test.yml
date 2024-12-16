@@ -1,4 +1,4 @@
-name: test
+name: Test Foundry Project
 
 on:
   push:
@@ -10,29 +10,35 @@ env:
   FOUNDRY_PROFILE: ci
 
 jobs:
-  check:
+  foundry-build-test:
+    name: Foundry Build and Test
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
 
-    name: Foundry project
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # Checkout the repository and submodules
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
+      # Install Foundry toolchain (specific version)
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
 
+      # Build the Forge project and display size information
       - name: Run Forge build
         run: |
+          echo "Forge Version:"
           forge --version
+          echo "Building the project with size info:"
           forge build --sizes
-        id: build
 
+      # Run Forge tests with verbose output
       - name: Run Forge tests
         run: |
+          echo "Running Forge tests with verbose output:"
           forge test -vvv
-        id: test
